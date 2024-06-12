@@ -1,0 +1,10 @@
+#the current naming of this file '______Caddyfile' is for organizational purposes only
+#this file needs to be renamed to 'Caddyfile' if you're using it in a new project
+
+#			V0.1
+#			SUSE CADDYFILE
+
+:80 #this is where you can reach your servers at
+
+reverse_proxy :8080 # this is where your servers are curretly running
+
