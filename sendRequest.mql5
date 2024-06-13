@@ -1,0 +1,90 @@
+//+------------------------------------------------------------------+
+//|                                                      tester1.mq5 |
+//|                                  Copyright 2024, MetaQuotes Ltd. |
+//|                                             https://www.mql5.com |
+//+------------------------------------------------------------------+
+#property copyright "Copyright 2024, MetaQuotes Ltd."
+#property link      "https://www.mql5.com"
+#property version   "1.00"
+
+datetime startTime;
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+
+
+int OnInit()
+  {
+//---
+   
+//---
+   return(INIT_SUCCEEDED);
+  }
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+  {
+//---
+   
+  }
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+  {
+//---
+   
+  }
+//+------------------------------------------------------------------+
+//| TradeTransaction function                                        |
+//+------------------------------------------------------------------+
+void OnTradeTransaction(const MqlTradeTransaction& trans,
+                        const MqlTradeRequest& request,
+                        const MqlTradeResult& result)
+  
+  {
+//---
+
+   ulong ticket = result.deal;
+   ulong orderTicket = result.order;
+
+   
+   HistoryDealSelect(ticket);
+   HistoryOrderSelect(orderTicket);
+   ulong positionTicket = PositionGetTicket(0);
+
+   double getVol = HistoryDealGetDouble(ticket,DEAL_VOLUME);
+   double getProfit = HistoryDealGetDouble(ticket, DEAL_PROFIT);
+   string symbol = HistoryDealGetString(ticket, DEAL_SYMBOL); 
+   long startTimeMs = PositionGetInteger(POSITION_TIME_MSC);
+   datetime endTime = HistoryOrderGetInteger(orderTicket, ORDER_TIME_DONE);
+   ENUM_ORDER_TYPE type = HistoryOrderGetInteger(orderTicket, ORDER_TYPE);
+   double positionSize = HistoryOrderGetDouble(orderTicket, ORDER_VOLUME_INITIAL);
+   double sl = HistoryDealGetDouble(ticket,DEAL_SL);
+   double tp = HistoryDealGetDouble(ticket,DEAL_TP);
+   
+   if(startTimeMs > 1000){
+      startTime = PositionGetInteger(POSITION_TIME);
+   }
+   
+   string baseUrl = "http://192.46.223.26:8080/";
+   string url = baseUrl + "/?symbol=" + symbol + "&profit=" + getProfit + "&startTime=" + startTime + "&endTime=" + endTime + "&type=" + type + "&positionSize=" + positionSize + "&tp=" + tp + "&sl=" + sl;
+   
+   string cookie=NULL,headers;
+   char result2[], data[];
+   
+
+   //Print(positionTicket," ",orderTicket);
+   //Print(startTime, " ", startTimeMs);
+   if(getProfit != 0){
+      PrintFormat("U Just Traded %s, netting you %f",symbol,getProfit);
+     
+      //char data[symbol, getProfit];
+      //tried a post request, dont know how to get an object (prefferably json) into char
+      int response = WebRequest("GET",url,cookie,NULL,500,data,0,result2,headers);
+      Print(response);
+   }
+  
+  }
+//+------------------------------------------------------------------+
