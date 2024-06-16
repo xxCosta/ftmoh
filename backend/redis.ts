@@ -16,7 +16,8 @@ export default class Redis{
     }
 
     public async save(trade){
-        trade.environment = await this.checkEnv()
+        let env = await this.checkEnv()
+        trade.environment = env
         await tradeRepository.save(trade)
         //trade[EntityId]
    }
@@ -26,8 +27,8 @@ export default class Redis{
         if(env === "null"){
             redis.set("env","demo") 
         }
-        env === "test" ? redis.set("env","live") : redis.set("env","test")
-        return env
+        env === "demo" ? redis.set("env","live") : redis.set("env","demo")
+        return "now saving data from " + await this.checkEnv() + " account"
    }
 
    private async checkEnv(){
