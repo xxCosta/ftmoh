@@ -59,14 +59,16 @@ const getDuration = (startTime:string,endTime:string) => {
     s.forEach((seconds)=>startTotal+=seconds)
     e.forEach((seconds)=>endTotal+=seconds)
     
-    let duration:number|string = endTotal-startTotal
+    let duration:number|string = endTotal-startTotal 
     if(duration > 60){
         let minutes = Math.floor(duration/60)
         let seconds = duration - (minutes*60)
         duration = `${minutes}:${seconds}`
     }
 
-    //console.log(duration)
+    if(typeof duration != "string"){
+        return duration + "s"
+    }
     return duration
     
 }
@@ -82,8 +84,8 @@ Bun.serve({
         }
         let position:TradeProps 
         const p = url.searchParams
+        let duration
         //TODO: resolve promise on 2 position call
-        //let tradeDuration = getDuration(trade.startTime.split(/[\s]+/).pop(), trade.endTime.split(/[\s]+/).pop())
         position = new Position(
             p.get("symbol"),
             Number(p.get("profit")),
@@ -93,13 +95,11 @@ Bun.serve({
             Number(p.get("positionSize")),
             Number(p.get("tp")),
             Number(p.get("sl")),
-            //tradeDuration
-            "needs bug fix"
+            duration
         )
         
-        
-
-        console.log(position)
+        position.duration = getDuration(position.startTime.split(/[\s]+/).pop(), position.endTime.split(/[\s]+/).pop())
+        console.log(position.duration)
 
         await db.save(position)
     
