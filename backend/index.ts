@@ -1,5 +1,6 @@
 import Redis from "./redis"
 import type {TradeProps} from "./types"
+import { tradeChecker } from "./errorChecker"
 let db = new Redis
 db.test()
 
@@ -42,8 +43,6 @@ class Position implements TradeProps {
 //let positionCounter:number
 
 
-//this function works but somewhere in the request call a bug was introduced after recent changes
-//need to debug further, maybe put this on the frontend
 const getDuration = (startTime:string,endTime:string) => {
     //input string as hh:mm:ss
     let s:number[] = startTime.split(":").map((string) => Number(string))
@@ -67,7 +66,7 @@ const getDuration = (startTime:string,endTime:string) => {
     }
 
     if(typeof duration != "string"){
-        return duration + "s"
+        return duration + "s" 
     }
     return duration
     
@@ -98,8 +97,13 @@ Bun.serve({
             duration
         )
         
+        //console.log(position)
+        let errors = (tradeChecker(position))
+        console.log(errors.message)
+        if(errors.status != 200){
+            return new Response(errors.message,{status: errors.status})
+        }
         position.duration = getDuration(position.startTime.split(/[\s]+/).pop(), position.endTime.split(/[\s]+/).pop())
-        console.log(position.duration)
 
         await db.save(position)
     
