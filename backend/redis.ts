@@ -11,13 +11,28 @@ await redis.connect()
 const tradeRepository = new Repository(tradeSchema,redis)
 
 export default class Redis{
-    async test(){
+    public async test(){
         console.log(await redis.ping()) 
     }
 
-    async save(trade){
+    public async save(trade){
+        trade.environment = await this.checkEnv()
         await tradeRepository.save(trade)
         //trade[EntityId]
+   }
+
+   public async toggleEnv(){
+        let env = await redis.get("env")
+        if(env === "null"){
+            redis.set("env","demo") 
+        }
+        env === "test" ? redis.set("env","live") : redis.set("env","test")
+        return env
+   }
+
+   private async checkEnv(){
+        let env = await redis.get("env")
+        return env
    }
     
 

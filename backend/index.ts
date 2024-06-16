@@ -76,6 +76,10 @@ Bun.serve({
 	async fetch(request: Request){
 	
         let url = new URL(request.url)
+        if(url.pathname === "/toggle"){
+            let environment = await db.toggleEnv()
+            return new Response(environment)
+        }
         let position:TradeProps 
         const p = url.searchParams
         //TODO: resolve promise on 2 position call
