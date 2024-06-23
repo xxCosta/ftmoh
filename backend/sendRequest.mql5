@@ -55,7 +55,9 @@ void OnTradeTransaction(const MqlTradeTransaction& trans,
    ulong positionTicket = PositionGetTicket(0);
 
    double getVol = HistoryDealGetDouble(ticket,DEAL_VOLUME);
-   double getProfit = HistoryDealGetDouble(ticket, DEAL_PROFIT);
+   double grossProfit = HistoryDealGetDouble(ticket, DEAL_PROFIT);
+   double commision = HistoryDealGetDouble(ticket, DEAL_COMMISSION);
+   double netProfit = grossProfit - commision;
    string symbol = HistoryDealGetString(ticket, DEAL_SYMBOL); 
    long startTimeMs = PositionGetInteger(POSITION_TIME_MSC);
    datetime endTime = HistoryOrderGetInteger(orderTicket, ORDER_TIME_DONE);
@@ -63,13 +65,15 @@ void OnTradeTransaction(const MqlTradeTransaction& trans,
    double positionSize = HistoryOrderGetDouble(orderTicket, ORDER_VOLUME_INITIAL);
    double sl = HistoryDealGetDouble(ticket,DEAL_SL);
    double tp = HistoryDealGetDouble(ticket,DEAL_TP);
+   double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+ 
    
    if(startTimeMs > 1000){
       startTime = PositionGetInteger(POSITION_TIME);
    }
    
    string baseUrl = "http://192.46.223.26:8080/";
-   string url = baseUrl + "/?symbol=" + symbol + "&profit=" + getProfit + "&startTime=" + startTime + "&endTime=" + endTime + "&type=" + type + "&positionSize=" + positionSize + "&tp=" + tp + "&sl=" + sl;
+   string url = baseUrl + "/?symbol=" + symbol + "&profit=" + netProfit + "&startTime=" + startTime + "&endTime=" + endTime + "&type=" + type + "&positionSize=" + positionSize + "&tp=" + tp + "&sl=" + sl + "&accountBalance=" + accountBalance;
    
    string cookie=NULL,headers;
    char result2[], data[];
@@ -77,8 +81,8 @@ void OnTradeTransaction(const MqlTradeTransaction& trans,
 
    //Print(positionTicket," ",orderTicket);
    //Print(startTime, " ", startTimeMs);
-   if(getProfit != 0){
-      PrintFormat("U Just Traded %s, netting you %f",symbol,getProfit);
+   if(grossProfit != 0){
+      PrintFormat("U Just Traded %s, netting you %f",symbol,netProfit);
      
       //char data[symbol, getProfit];
       //tried a post request, dont know how to get an object (prefferably json) into char
