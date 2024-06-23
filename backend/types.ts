@@ -9,7 +9,8 @@ export interface TradeProps {
     positionSize: number,
     tp: number,
     sl: number,
-    duration: string|number 
+    duration: string|number,
+    accountBalance: string|number
 }
 
 

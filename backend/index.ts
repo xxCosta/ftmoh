@@ -26,8 +26,9 @@ class Position implements TradeProps {
     tp
     sl
     duration
+    accountBalance
 
-    constructor(symbol:string, profit:number, startTime:string, endTime:string, type:number, positionSize:number, tp:number, sl:number, duration:string|number){
+    constructor(symbol:string, profit:number, startTime:string, endTime:string, type:number, positionSize:number, tp:number, sl:number, duration:string|number, accountBalance:string|number){
     this.symbol = symbol,
     this.profit = profit,
     this.startTime = startTime,
@@ -35,8 +36,9 @@ class Position implements TradeProps {
     this.type=type,
     this.positionSize=positionSize,
     this.tp=tp,
-    this.sl=sl
-    this.duration=duration
+    this.sl=sl,
+    this.duration=duration,
+    this.accountBalance=accountBalance
     }
 }
 
@@ -94,7 +96,8 @@ Bun.serve({
             Number(p.get("positionSize")),
             Number(p.get("tp")),
             Number(p.get("sl")),
-            duration
+            duration,
+            p.get("accountBalance")
         )
         
         //console.log(position)
