@@ -28,7 +28,7 @@ class Position implements TradeProps {
     duration
     accountBalance
 
-    constructor(symbol:string, profit:number, startTime:string, endTime:string, type:number, positionSize:number, tp:number, sl:number, duration:string|number, accountBalance:string|number){
+    constructor(symbol:string, profit:number, startTime:string, endTime:string, type:number, positionSize:number, tp:number, sl:number, duration:string|number, accountBalance:number){
     this.symbol = symbol,
     this.profit = profit,
     this.startTime = startTime,
@@ -98,7 +98,7 @@ Bun.serve({
             Number(p.get("tp")),
             Number(p.get("sl")),
             duration,
-            p.get("accountBalance")
+            Number(p.get("accountBalance"))
         )
         position.duration = getDuration(position.startTime.split(/[\s]+/).pop(), position.endTime.split(/[\s]+/).pop())
         

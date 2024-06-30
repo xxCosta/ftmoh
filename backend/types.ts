@@ -10,7 +10,7 @@ export interface TradeProps {
     tp: number,
     sl: number,
     duration: string|number,
-    accountBalance: string|number
+    accountBalance: number
 }
 
 
@@ -23,5 +23,7 @@ export const tradeSchema = new Schema('trade', {
     positionSize:{ type: 'number' },
     tp:{ type: 'number' },
     sl:{ type: 'number' },
-    duration:{ type: 'string' } 
+    duration:{ type: 'string' },
+    accountBalance: {type: 'number'},
+    environment: {type: 'string'}
 },{dataStructure: 'JSON'})
