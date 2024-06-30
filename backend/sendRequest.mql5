@@ -1,17 +1,16 @@
 //+------------------------------------------------------------------+
-//|                                                      tester1.mq5 |
+//|                                                ftmoh(manual).mq5 |
 //|                                  Copyright 2024, MetaQuotes Ltd. |
 //|                                             https://www.mql5.com |
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2024, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
 #property version   "1.00"
-
-datetime startTime;
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
-
+int i = 0;
+datetime startTime;
 
 int OnInit()
   {
@@ -37,58 +36,87 @@ void OnTick()
    
   }
 //+------------------------------------------------------------------+
-//| TradeTransaction function                                        |
+//| ChartEvent function                                              |
 //+------------------------------------------------------------------+
-void OnTradeTransaction(const MqlTradeTransaction& trans,
-                        const MqlTradeRequest& request,
-                        const MqlTradeResult& result)
-  
-  {
-//---
+void req(ulong orderT,ulong dealT, ulong positionT){
+   //Print(orderTicket,"  ",dealTicket);
+      
+   ulong ticket = dealT;
+   ulong orderTicket = orderT;
 
-   ulong ticket = result.deal;
-   ulong orderTicket = result.order;
-
-   
-   HistoryDealSelect(ticket);
-   HistoryOrderSelect(orderTicket);
-   ulong positionTicket = PositionGetTicket(0);
 
    double getVol = HistoryDealGetDouble(ticket,DEAL_VOLUME);
    double grossProfit = HistoryDealGetDouble(ticket, DEAL_PROFIT);
    double commision = HistoryDealGetDouble(ticket, DEAL_COMMISSION);
    double netProfit = grossProfit - commision;
    string symbol = HistoryDealGetString(ticket, DEAL_SYMBOL); 
-   long startTimeMs = PositionGetInteger(POSITION_TIME_MSC);
+   //long startTimeMs = PositionGetInteger(POSITION_TIME_MSC);
    datetime endTime = HistoryOrderGetInteger(orderTicket, ORDER_TIME_DONE);
    ENUM_ORDER_TYPE type = HistoryOrderGetInteger(orderTicket, ORDER_TYPE);
    double positionSize = HistoryOrderGetDouble(orderTicket, ORDER_VOLUME_INITIAL);
    double sl = HistoryDealGetDouble(ticket,DEAL_SL);
+   
    double tp = HistoryDealGetDouble(ticket,DEAL_TP);
    double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
  
+   //Print(grossProfit);
    
-   if(startTimeMs > 1000){
-      startTime = PositionGetInteger(POSITION_TIME);
-   }
+//   if(startTimeMs > 1000){
+//      startTime = PositionGetInteger(POSITION_TIME);
+//   }
    
-   string baseUrl = "http://192.46.223.26:8080/";
+   
+   string baseUrl = "http://172.105.24.24:8080";
    string url = baseUrl + "/?symbol=" + symbol + "&profit=" + netProfit + "&startTime=" + startTime + "&endTime=" + endTime + "&type=" + type + "&positionSize=" + positionSize + "&tp=" + tp + "&sl=" + sl + "&accountBalance=" + accountBalance;
    
    string cookie=NULL,headers;
    char result2[], data[];
    
-
-   //Print(positionTicket," ",orderTicket);
-   //Print(startTime, " ", startTimeMs);
    if(grossProfit != 0){
       PrintFormat("U Just Traded %s, netting you %f",symbol,netProfit);
-     
-      //char data[symbol, getProfit];
-      //tried a post request, dont know how to get an object (prefferably json) into char
       int response = WebRequest("GET",url,cookie,NULL,500,data,0,result2,headers);
       Print(response);
    }
   
+}
+
+void OnChartEvent(const int id,
+                  const long &lparam,
+                  const double &dparam,
+                  const string &sparam)
+  {
+   if(lparam == 104){
+      startTime = TimeCurrent();
+      Print(startTime);
+   }
+   if(lparam == 17){   
+      i++;
+      if(i == 2){
+         
+         datetime currentTime = TimeCurrent();
+         ulong currentTimeMs = currentTime * 1000;
+         ulong fourHrs = 14400000;
+         //ulong startTime = (currentTimeMs - fourHrs)/1000;
+         //toggle between starTime methods
+         //above is for production
+         //below is for testing 
+         ulong startTime = 1718852400000 / 1000;
+         //Print(startTime);
+         HistorySelect(startTime,currentTime);
+         int dealTotal = HistoryDealsTotal();
+         int orderTotal = HistoryOrdersTotal();
+         
+         Print(dealTotal);
+         for(int n=0;n<dealTotal;n++){
+            //ulong orderTicket = HistoryOrderGetTicket(i);
+            req(HistoryOrderGetTicket(n),HistoryDealGetTicket(n),PositionGetTicket(n));   
+            Print(PositionGetTicket(n));
+         }
+         
+         i = 0;
+      }      
+      
+   }
   }
 //+------------------------------------------------------------------+
+
