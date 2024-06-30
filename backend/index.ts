@@ -70,6 +70,7 @@ const getDuration = (startTime:string,endTime:string) => {
     if(typeof duration != "string"){
         return duration + "s" 
     }
+    console.log(duration)
     return duration
     
 }
@@ -99,15 +100,8 @@ Bun.serve({
             duration,
             p.get("accountBalance")
         )
-        
-        //console.log(position)
-        let errors = (tradeChecker(position))
-        console.log(errors.message)
-        if(errors.status != 200){
-            return new Response(errors.message,{status: errors.status})
-        }
         position.duration = getDuration(position.startTime.split(/[\s]+/).pop(), position.endTime.split(/[\s]+/).pop())
-
+        
         await db.save(position)
     
 
