@@ -80,6 +80,11 @@ Bun.serve({
 	async fetch(request: Request){
 	
         let url = new URL(request.url)
+        if(url.pathname === "/batchDelete"){
+            let reqBody = await(request.json())
+            let d = await db.batchDelete(reqBody.key,reqBody.value)
+            return new Response(d)
+        } 
         if(url.pathname === "/toggle"){
             let environment = await db.toggleEnv()
             return new Response(environment)

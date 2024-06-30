@@ -9,6 +9,7 @@ redis.on('error',(err)=>{console.log(err)})
 await redis.connect()
 
 const tradeRepository = new Repository(tradeSchema,redis)
+await tradeRepository.createIndex()
 
 export default class Redis{
     public async test(){
@@ -34,6 +35,16 @@ export default class Redis{
    private async checkEnv(){
         let env = await redis.get("env")
         return env
+   }
+
+   public async batchDelete(key:string,value:string|number|boolean){ 
+       let search = await tradeRepository.search().where(key).eq(value).return.all()
+       let searchLength = search.length
+       search.forEach(async(item) =>{
+        let id = item[EntityId]
+        await tradeRepository.remove(id)
+       })
+       return (`${searchLength} entities have been deleted`)
    }
     
 
