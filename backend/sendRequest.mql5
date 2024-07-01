@@ -10,7 +10,6 @@
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
 int i = 0;
-datetime startTime;
 
 int OnInit()
   {
@@ -38,7 +37,7 @@ void OnTick()
 //+------------------------------------------------------------------+
 //| ChartEvent function                                              |
 //+------------------------------------------------------------------+
-void req(ulong orderT,ulong dealT, ulong positionT){
+void req(ulong orderT,ulong dealT){
    //Print(orderTicket,"  ",dealTicket);
       
    ulong ticket = dealT;
@@ -50,7 +49,6 @@ void req(ulong orderT,ulong dealT, ulong positionT){
    double commision = HistoryDealGetDouble(ticket, DEAL_COMMISSION);
    double netProfit = grossProfit - commision;
    string symbol = HistoryDealGetString(ticket, DEAL_SYMBOL); 
-   //long startTimeMs = PositionGetInteger(POSITION_TIME_MSC);
    datetime endTime = HistoryOrderGetInteger(orderTicket, ORDER_TIME_DONE);
    ENUM_ORDER_TYPE type = HistoryOrderGetInteger(orderTicket, ORDER_TYPE);
    double positionSize = HistoryOrderGetDouble(orderTicket, ORDER_VOLUME_INITIAL);
@@ -67,7 +65,7 @@ void req(ulong orderT,ulong dealT, ulong positionT){
    
    
    string baseUrl = "http://172.105.24.24:8080";
-   string url = baseUrl + "/?symbol=" + symbol + "&profit=" + netProfit + "&startTime=" + startTime + "&endTime=" + endTime + "&type=" + type + "&positionSize=" + positionSize + "&tp=" + tp + "&sl=" + sl + "&accountBalance=" + accountBalance;
+   string url = baseUrl + "/?symbol=" + symbol + "&profit=" + "&endTime=" + endTime + netProfit + "&type=" + type + "&positionSize=" + positionSize + "&tp=" + tp + "&sl=" + sl + "&accountBalance=" + accountBalance;
    
    string cookie=NULL,headers;
    char result2[], data[];
@@ -85,32 +83,14 @@ void OnChartEvent(const int id,
                   const double &dparam,
                   const string &sparam)
   {
-   if(lparam == 104){
-      startTime = TimeCurrent();
-      Print(startTime);
-   }
+
    if(lparam == 17){   
       i++;
       if(i == 2){
-         
-         datetime currentTime = TimeCurrent();
-         ulong currentTimeMs = currentTime * 1000;
-         ulong fourHrs = 14400000;
-         //ulong startTime = (currentTimeMs - fourHrs)/1000;
-         //toggle between starTime methods
-         //above is for production
-         //below is for testing 
-         ulong startTime = 1718852400000 / 1000;
-         //Print(startTime);
-         HistorySelect(startTime,currentTime);
-         int dealTotal = HistoryDealsTotal();
-         int orderTotal = HistoryOrdersTotal();
-         
-         Print(dealTotal);
+        int dealTotal = HistoryDealsTotal(); 
          for(int n=0;n<dealTotal;n++){
             //ulong orderTicket = HistoryOrderGetTicket(i);
-            req(HistoryOrderGetTicket(n),HistoryDealGetTicket(n),PositionGetTicket(n));   
-            Print(PositionGetTicket(n));
+            req(HistoryOrderGetTicket(n),HistoryDealGetTicket(n));   
          }
          
          i = 0;
