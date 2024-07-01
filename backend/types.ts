@@ -12,6 +12,29 @@ export interface TradeProps {
 }
 
 
+export class Position implements TradeProps {
+    symbol
+    profit
+    endTime
+    type
+    positionSize
+    tp
+    sl
+    accountBalance
+
+    constructor(symbol: string, profit: number, endTime: string, type: number, positionSize: number, tp: number, sl: number, accountBalance: number) {
+        this.symbol = symbol,
+            this.profit = profit,
+            this.endTime = endTime,
+            this.type = type,
+            this.positionSize = positionSize,
+            this.tp = tp,
+            this.sl = sl,
+            this.accountBalance = accountBalance
+    }
+}
+
+
 export const tradeSchema = new Schema('trade', {
     symbol:{ type: 'string' },
     profit:{ type: 'number' },
