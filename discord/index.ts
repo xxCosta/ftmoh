@@ -51,16 +51,52 @@ const newTradeCommand = new SlashCommandBuilder()
     )
     .addStringOption(option =>
         option.setName('position')
-            .setDescription('long or short?')
+            .setDescription('long or short')
             .addChoices(
                 { name:'long', value:'position_long'},
                 { name: 'short', value:'position_short'}
             )
             .setRequired(true)
     )
+    .addNumberOption(option =>
+        option.setName('profit')
+        .setDescription('how much did you net')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+        option.setName('close-time')
+        .setDescription('what time did you close your position')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+        option.setName('tp')
+        .setDescription('what was your tp')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+        option.setName('sl')
+        .setDescription('what was your sl')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+        option.setName('entry')
+        .setDescription('what was your entry')
+        .setRequired(true)
+    )
+    .addAttachmentOption(option => 
+        option.setName('attachment1')
+        .setDescription('upload a screenshot of the trade')
+        .setRequired(true)
+    )
+    .addAttachmentOption(option => 
+        option.setName('attachment2')
+        .setDescription('additional screenshot')
+    )
 
 client.on(Events.InteractionCreate, async interaction =>{
     if (interaction.commandName === 'new-trade'){
+        //const message = await interaction.fetchReply()
+        //console.log(message)
         await interaction.reply('trade saved')
     }
 })
