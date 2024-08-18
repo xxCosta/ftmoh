@@ -1,5 +1,5 @@
 import {Elysia, t} from 'elysia'
-
+import {} from './types'
 
 //discord websocker url
 let dws:string
