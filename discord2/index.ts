@@ -1,4 +1,5 @@
 import {Elysia, t} from 'elysia'
+import { io } from 'socket.io-client'
 import {} from './types'
 
 //discord websocker url
@@ -21,6 +22,9 @@ try{
 }catch (e){
     console.log(e)
 }
+
+
+const socket = io(dws)
 
 const server = new Elysia()
     .get('/', () => 'was poppin')

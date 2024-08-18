@@ -12,6 +12,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "elysia": "^1.1.6"
+    "elysia": "^1.1.6",
+    "socket.io-client": "^4.7.5"
   }
 }
