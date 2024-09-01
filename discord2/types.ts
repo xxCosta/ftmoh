@@ -2,8 +2,11 @@
 
 export interface SendEvent{
     op: number,
-    d: object
+    d: object,
+    t?: string,
+    s?: number
 }
+
 
 export interface TradeProps {
     symbol: string,
