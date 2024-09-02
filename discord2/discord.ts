@@ -13,14 +13,17 @@ interface wsEvent{
 
 export class Discord {
     wsUrl:string
+    #token:string
+    identified:boolean = false
+
     constructor(token:string){
-        this.#init(token)
+        this.#initDb(token)
+        this.#token = token
     }
 
-    async #init( token:string ) {
+    async #initDb( token:string ) {
                 
         const db = new Database("discord-db.sqlite");
-
 
         try {
 
@@ -45,25 +48,41 @@ export class Discord {
             const dwsQuery = db.query("SELECT * FROM cache WHERE key='dws'").get()
 
             this.wsUrl = dwsQuery.value
-            this.#initDb()
-        }catch (e) {
+            this.#initWs()
+        } catch (e) {
             console.log(e)
         }
     }
 
-   async #initDb(){
+   async #initWs(){
 
         const ws = new WebSocket(this.wsUrl) 
+        const interval = Math.ceil(41250*Math.random())
+        console.log("heartbeat running every " + (interval/1000) + "s")
         ws.on('error', console.error)
 
         ws.on("open", ()=>{
-            console.log("open connection")
+            console.log("socket open")
         })
 
+        const identify = () => {
+            const e:wsEvent = {
+                op: 2,
+                d: {
+                    token: this.#token,
+                    properties: {
+                        os: "linux",
+                        browser: "ftmoh",
+                        device: "ftmoh"
+                    },
+                    intents: 35329
+                }
+            }
+            ws.send(JSON.stringify(e)) 
+        }
+        //listen for then start heartbeat
         ws.addEventListener('message', (d)=>{
             const event = JSON.parse(d.data)
-
-            const interval = Math.ceil(41250*Math.random())
 
             if (event.op === 10){
                 const e:wsEvent = {
@@ -72,8 +91,11 @@ export class Discord {
                 } 
             const sendEvent = () => ws.send(JSON.stringify(e))
             const heartbeat = setInterval(sendEvent,interval)
+            identify()
             } 
         })
+
+        //Check Heartbeat
         let heartbeatCounter = 0
         ws.addEventListener('message', (d)=>{
             const event = JSON.parse(d.data)
@@ -87,6 +109,14 @@ export class Discord {
                         ?heartbeatCounter = 0
                         :console.log("<3")
                 }
+            }
+        })
+
+        ws.addEventListener('message', (d)=>{
+            const event = JSON.parse(d.data)
+            if (event.op === 0 && event.t === "READY"){
+                this.identified = true
+                console.log(event)
             }
         })
     }
