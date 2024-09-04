@@ -11,14 +11,19 @@ interface wsEvent{
 
 
 
-export class Discord {
-    wsUrl:string
+export class DiscordWs {
+    #wsUrl:string
     #token:string
-    identified:boolean = false
+    #identified:boolean = false
+    #sessionId:string
+    #resumeGatewayUrl:string
+    #ws
+    
 
     constructor(token:string){
         this.#initDb(token)
         this.#token = token
+        setTimeout(()=>this.#newMessageCreated(),1000)
     }
 
     async #initDb( token:string ) {
@@ -47,7 +52,7 @@ export class Discord {
             
             const dwsQuery = db.query("SELECT * FROM cache WHERE key='dws'").get()
 
-            this.wsUrl = dwsQuery.value
+            this.#wsUrl = dwsQuery.value
             this.#initWs()
         } catch (e) {
             console.log(e)
@@ -56,7 +61,8 @@ export class Discord {
 
    async #initWs(){
 
-        const ws = new WebSocket(this.wsUrl) 
+        const ws = new WebSocket(this.#wsUrl)
+        this.#ws = ws 
         const interval = Math.ceil(41250*Math.random())
         console.log("heartbeat running every " + (interval/1000) + "s")
         ws.on('error', console.error)
@@ -114,11 +120,25 @@ export class Discord {
 
         ws.addEventListener('message', (d)=>{
             const event = JSON.parse(d.data)
+            // 2 different events are called on OP=0
+            // console log event for both
             if (event.op === 0 && event.t === "READY"){
-                this.identified = true
-                console.log(event)
+                console.log("READY")
+                this.#identified = true
+                this.#sessionId = event.d.session_id
+                this.#resumeGatewayUrl = event.d.resume_gateway_url
             }
         })
     }
-    
+    async #newMessageCreated(){
+        this.#ws.addEventListener('message', (d)=>{
+            const event = JSON.parse(d.data)
+            if( event.t === "MESSAGE_CREATE" ){
+                console.log(event.d.attachments)
+            }
+        })
+    }
 }
+
+
+
