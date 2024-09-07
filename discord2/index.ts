@@ -5,7 +5,9 @@ import {} from './types'
 import WebSocket from "ws";
 import { DiscordWs } from "./discord";
 
-const discord = new DiscordWs(Bun.env.TOKEN)
+//THIS FILE WILL BE THE ENTRYPOINT TO THE CLI
+//THE CLI WILL BE RESPONSIBLE FOR CRUD OF COMMANDS AND OVERALL ADMIN
+//NO LOGIC SHOULD GO IN HERE UNLESS IT'S CLI RELATED
 
 
 
