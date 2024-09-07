@@ -52,7 +52,7 @@ export class DiscordWs {
             
             const dwsQuery = db.query("SELECT * FROM cache WHERE key='dws'").get()
 
-            this.#wsUrl = dwsQuery.value
+            this.#wsUrl = dwsQuery.value as string
             this.#initWs()
         } catch (e) {
             console.log(e)
