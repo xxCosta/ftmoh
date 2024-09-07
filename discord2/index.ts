@@ -1,14 +1,14 @@
-import { Database } from "bun:sqlite"
 import {Elysia, t} from 'elysia'
-// import { io } from 'socket.io-client'
 import {} from './types'
-import WebSocket from "ws";
-import { DiscordWs } from "./discord";
+import { DiscordWs } from "./discordWS";
+import DiscordHttp from './discordHTTP';
 
 //THIS FILE WILL BE THE ENTRYPOINT TO THE CLI
 //THE CLI WILL BE RESPONSIBLE FOR CRUD OF COMMANDS AND OVERALL ADMIN
 //NO LOGIC SHOULD GO IN HERE UNLESS IT'S CLI RELATED
 
+const discordWs = new DiscordWs(Bun.env.TOKEN)
+const discordHTTP = new DiscordHttp()
 
 
 const server = new Elysia()
