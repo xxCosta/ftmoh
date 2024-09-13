@@ -1,7 +1,7 @@
 const url:string = "https://discord.com/api/gateway/bot"
 
 
-type SlashCommand = {
+export type SlashCommand = {
     name: string,
     type: number,
     description: string,
@@ -21,12 +21,13 @@ type Choice = {
     value: string
 }
 
-class CommandBuilder implements SlashCommand {
-
-}
 
 export default class DiscordHttp {
     constructor(){
         
-    }    
+    }   
+
+    public newCommand(commandProps: SlashCommand){
+        return "hello"
+    }
 }
