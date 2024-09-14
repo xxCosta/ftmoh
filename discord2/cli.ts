@@ -3,6 +3,7 @@ import * as readline from 'node:readline'
 import { stdin, stdout } from 'node:process'
 import type { SlashCommand, Option, Choice } from './discordHTTP';
 import DiscordHttp from './discordHTTP'; 
+import boxen from 'boxen';
 //THIS FILE WILL BE THE ENTRYPOINT TO THE CLI
 //THE CLI WILL BE RESPONSIBLE FOR CRUD OF COMMANDS AND OVERALL ADMIN
 //NO LOGIC SHOULD GO IN HERE UNLESS IT'S CLI RELATED
@@ -15,6 +16,7 @@ const rl = readline.createInterface(stdin,stdout)
 stdin.on("keypress", (_,key)=> console.log(key))
 
 //----WHAT DO YOU WANT TO DO-----
+rl.write(boxen('FTMOH ADMIN CLI', {padding: 1}) + "\n")
 rl.write("so den? what are manz tryna do? \n")
 const intentions:string[] = ["CRUD Slash Commands", "stats", "admin"]
 
