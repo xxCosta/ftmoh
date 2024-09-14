@@ -12,6 +12,8 @@ import DiscordHttp from './discordHTTP';
 const discord = new DiscordHttp
 const rl = readline.createInterface(stdin,stdout)
 
+stdin.on("keypress", (_,key)=> console.log(key))
+
 //----WHAT DO YOU WANT TO DO-----
 rl.write("so den? what are manz tryna do? \n")
 const intentions:string[] = ["CRUD Slash Commands", "stats", "admin"]
