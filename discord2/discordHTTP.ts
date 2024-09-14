@@ -5,10 +5,10 @@ export type SlashCommand = {
     name: string,
     type: number,
     description: string,
-    options: Option[]
+    options?: Option[]
 }
 
-type Option = {
+export type Option = {
     name: string,
     description: string,
     type: number,
@@ -16,7 +16,7 @@ type Option = {
     choices?: Choice[] 
 }
 
-type Choice = {
+export type Choice = {
     name: string,
     value: string
 }
