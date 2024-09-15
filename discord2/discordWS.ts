@@ -9,6 +9,19 @@ interface wsEvent{
 }
 
 
+type TradeProps = {
+    symbol: string,
+    profit: number,
+    endTime: string,
+    type: number,
+    positionSize: number,
+    tp: number,
+    sl: number,
+    entry: number,
+    attachment: string[]
+}
+
+const db = new Database("discord-db.sqlite");
 
 
 export class DiscordWs {
@@ -23,12 +36,13 @@ export class DiscordWs {
     constructor(token:string){
         this.#initDb(token)
         this.#token = token
-        setTimeout(()=>this.#newMessageCreated(),1000)
+        setTimeout(()=>{
+            this.#newMessageCreated()
+        },1000)
     }
 
     async #initDb( token:string ) {
                 
-        const db = new Database("discord-db.sqlite");
 
         try {
 
@@ -134,7 +148,19 @@ export class DiscordWs {
         this.#ws.addEventListener('message', (d)=>{
             const event = JSON.parse(d.data)
             if( event.t === "MESSAGE_CREATE" ){
-                console.log(event.d.attachments)
+                // console.log(event.d.content)
+                let newTrade:TradeProps = {}
+                newTrade.tp = event.d.content.match( /(?<=tp:\s)[\d.]+(?=\.)/g)[0]
+                newTrade.sl = event.d.content.match( /(?<=sl:\s)[\d.]+(?=\.)/g)[0]
+                newTrade.entry = event.d.content.match(/(?<=entry:\s)[\d.]+(?=\.)/g)[0]
+                newTrade.symbol = event.d.content.match(/[A-Z]{6}/g)[0]
+                newTrade.endTime = event.d.content.match(/[\d]+:[\d]+[apm]+/g)[0]
+                newTrade.positionSize = event.d.content.match(/[\d.]+(?= lots)/g)[0]
+                newTrade.type = event.d.content.match(/\b(long|short)\b/g)[0]
+                newTrade.attachment = event.d.attachments.map((a)=>a.url)
+                
+
+                
             }
         })
     }
