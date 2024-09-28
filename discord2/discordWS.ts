@@ -1,5 +1,6 @@
 import WebSocket from "ws";
 import { Database } from "bun:sqlite"
+import SQL from "sql-template-strings";
 
 interface wsEvent{
     op: number,
@@ -18,7 +19,7 @@ type TradeProps = {
     tp: number,
     sl: number,
     entry: number,
-    attachment: string[]
+    attachment: string
 }
 
 const db = new Database("discord-db.sqlite");
@@ -157,8 +158,23 @@ export class DiscordWs {
                 newTrade.endTime = event.d.content.match(/[\d]+:[\d]+[apm]+/g)[0]
                 newTrade.positionSize = event.d.content.match(/[\d.]+(?= lots)/g)[0]
                 newTrade.type = event.d.content.match(/\b(long|short)\b/g)[0]
-                newTrade.attachment = event.d.attachments.map((a)=>a.url)
-                
+                let attachmentArray = event.d.attachments.map((a,i)=>`attachment${i}: `+ a.url)
+                newTrade.attachment =attachmentArray.toString()
+
+
+                let query = db.query(`INSERT
+                         INTO 
+                         DemoTrades (symbol,tp,sl,entry,endTime,positionSize,type,attachment)
+                         VALUES (?1,?2,?3,?4,?5,?6,?7,?8)`)
+                query.run(
+                    newTrade.symbol,
+                    newTrade.tp,
+                    newTrade.sl,
+                    newTrade.entry,
+                    newTrade.endTime,
+                    newTrade.positionSize,
+                    newTrade.type,
+                    newTrade.attachment)
 
                 
             }

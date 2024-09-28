@@ -9,11 +9,10 @@
     "dev": "bun run --watch index.ts"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.5.4"
   },
   "dependencies": {
-    "elysia": "^1.1.6",
-    "socket.io-client": "^4.7.5",
+    "elysia": "^1.1.16",
     "ws": "^8.18.0"
   }
 }
